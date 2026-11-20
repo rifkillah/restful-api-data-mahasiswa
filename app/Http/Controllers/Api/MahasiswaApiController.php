@@ -9,12 +9,11 @@ use Illuminate\Support\Facades\Validator;
 
 class MahasiswaApiController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    // 1. GET /api/mahasiswa -> Menampilkan seluruh data mahasiswa
     public function index()
     {
         $mahasiswas = Mahasiswa::orderBy('id', 'asc')->get();
+
         return response()->json([
             'status' => true,
             'pesan' => 'Daftar data mahasiswa berhasil diambil',
@@ -23,16 +22,14 @@ class MahasiswaApiController extends Controller
         ], 200);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    // 2. POST /api/mahasiswa -> Menambahkan data mahasiswa baru
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'nim'     => 'required|string|max:20|unique:mahasiswas,nim',
-            'nama'    => 'required|string|max:100',
+            'nim' => 'required|string|max:20|unique:mahasiswas,nim',
+            'nama' => 'required|string|max:100',
             'jurusan' => 'required|string|max:100',
-            'ipk'     => 'required|numeric|between:0,4.00',
+            'ipk' => 'required|numeric|between:0,4.00',
         ]);
 
         if ($validator->fails()) {
@@ -44,19 +41,19 @@ class MahasiswaApiController extends Controller
         }
 
         $mahasiswa = Mahasiswa::create($request->only(['nim', 'nama', 'jurusan', 'ipk']));
+
         return response()->json([
             'status' => true,
-            'pesan' => 'Berhasil menambahkan data mahasiswa baru via POST /api/mahasiswa (201 Created) !',
+            'pesan' => 'Berhasil menambahkan data mahasiswa baru via POST /api/mahasiswa (201 Created)!',
             'data' => $mahasiswa
         ], 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
+    // 3. GET /api/mahasiswa/{id} -> Menampilkan detail 1 mahasiswa
     public function show(string $id)
     {
         $mahasiswa = Mahasiswa::find($id);
+
         if (!$mahasiswa) {
             return response()->json([
                 'status' => false,
@@ -71,12 +68,11 @@ class MahasiswaApiController extends Controller
         ], 200);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
+    // 4. PUT /api/mahasiswa/{id} -> Memperbarui data mahasiswa
     public function update(Request $request, string $id)
     {
         $mahasiswa = Mahasiswa::find($id);
+
         if (!$mahasiswa) {
             return response()->json([
                 'status' => false,
@@ -85,10 +81,10 @@ class MahasiswaApiController extends Controller
         }
 
         $validator = Validator::make($request->all(), [
-            'nim'     => 'required|string|max:20|unique:mahasiswas,nim,' . $id,
-            'nama'    => 'required|string|max:100',
+            'nim' => 'required|string|max:20|unique:mahasiswas,nim,' . $id,
+            'nama' => 'required|string|max:100',
             'jurusan' => 'required|string|max:100',
-            'ipk'     => 'required|numeric|between:0,4.00',
+            'ipk' => 'required|numeric|between:0,4.00',
         ]);
 
         if ($validator->fails()) {
@@ -100,19 +96,19 @@ class MahasiswaApiController extends Controller
         }
 
         $mahasiswa->update($request->only(['nim', 'nama', 'jurusan', 'ipk']));
+
         return response()->json([
             'status' => true,
             'pesan' => 'Data mahasiswa berhasil diperbarui!',
             'data' => $mahasiswa
-        ], 201);
+        ], 200);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+    // 5. DELETE /api/mahasiswa/{id} -> Menghapus data mahasiswa
     public function destroy(string $id)
     {
         $mahasiswa = Mahasiswa::find($id);
+
         if (!$mahasiswa) {
             return response()->json([
                 'status' => false,
@@ -121,6 +117,7 @@ class MahasiswaApiController extends Controller
         }
 
         $mahasiswa->delete();
+
         return response()->json([
             'status' => true,
             'pesan' => 'Data mahasiswa berhasil dihapus dari server API!'
