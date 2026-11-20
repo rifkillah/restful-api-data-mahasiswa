@@ -1,58 +1,68 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Layanan RESTful API Data Mahasiswa dan Portal Web Konsumen API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Contoh implementasi **RESTful API** di Laravel untuk mengelola data mahasiswa, dilengkapi portal web sederhana yang mengonsumsi API tersebut menggunakan JavaScript `fetch`.
 
-## About Laravel
+## Fitur
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- CRUD data mahasiswa melalui REST API: daftar, tambah, detail, ubah, hapus.
+- Validasi input (`nim` unik, `nama`, `jurusan`, `ipk` 0–4.00) dengan respons error 422.
+- Respons JSON konsisten (`status`, `pesan`, `data`).
+- Portal konsumen di `/client-mahasiswa` untuk menampilkan, menambah, dan menghapus data lewat API.
+- Data awal mahasiswa melalui seeder.
+- Feature test API (`tests/Feature/MahasiswaApiTest.php`).
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Teknologi
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- PHP 8.3+
+- Laravel
+- Blade + JavaScript (fetch)
+- SQLite (default)
 
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+## Instalasi
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+composer install
+cp .env.example .env
+php artisan key:generate
+touch database/database.sqlite
+php artisan migrate --seed
+php artisan serve
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+- Portal konsumen: http://localhost:8000/client-mahasiswa
+- API: http://localhost:8000/api/mahasiswa
 
-## Contributing
+## Endpoint API
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+| Method | Endpoint | Keterangan |
+|---|---|---|
+| GET | `/api/mahasiswa` | Daftar semua mahasiswa |
+| POST | `/api/mahasiswa` | Tambah mahasiswa baru |
+| GET | `/api/mahasiswa/{id}` | Detail mahasiswa |
+| PUT/PATCH | `/api/mahasiswa/{id}` | Ubah data mahasiswa |
+| DELETE | `/api/mahasiswa/{id}` | Hapus mahasiswa |
 
-## Code of Conduct
+Contoh request:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+curl -X POST http://localhost:8000/api/mahasiswa \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json" \
+  -d '{"nim":"2410114999","nama":"Nama Mahasiswa","jurusan":"Teknik Informatika","ipk":3.75}'
+```
 
-## Security Vulnerabilities
+Field data: `nim`, `nama`, `jurusan`, `ipk`.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Pengujian
 
-## License
+```bash
+php artisan test
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## Struktur Penting
+
+- `app/Http/Controllers/Api/MahasiswaApiController.php` — seluruh endpoint API.
+- `app/Models/Mahasiswa.php` — model dan field yang dapat diisi.
+- `routes/api.php` — `Route::apiResource('mahasiswa', ...)`.
+- `database/seeders/DatabaseSeeder.php` — data contoh.
+- `resources/views/client_mahasiswa.blade.php` — portal konsumen API.
